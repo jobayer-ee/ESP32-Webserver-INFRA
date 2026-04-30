@@ -1,17 +1,13 @@
-/*********
-  Rui Santos
-  Complete project details at https://randomnerdtutorials.com  
-*********/
 
-// Import required libraries
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 
-// Replace with your network credentials
+
 const char* ssid = "WIFI_SSID";
 const char* password = "PASSWORD";
+
 
 #define DHTPIN 4     // Digital pin connected to the DHT sensor
 
@@ -26,12 +22,9 @@ DHT dht(DHTPIN, DHTTYPE);
 AsyncWebServer server(80);
 
 String readDHTTemperature() {
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  // Read temperature as Celsius (the default)
+
   float t = dht.readTemperature();
-  // Read temperature as Fahrenheit (isFahrenheit = true)
-  //float t = dht.readTemperature(true);
-  // Check if any reads failed and exit early (to try again).
+
   if (isnan(t)) {    
     Serial.println("Failed to read from DHT sensor!");
     return "--";
@@ -43,7 +36,6 @@ String readDHTTemperature() {
 }
 
 String readDHTHumidity() {
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   float h = dht.readHumidity();
   if (isnan(h)) {
     Serial.println("Failed to read from DHT sensor!");
@@ -117,9 +109,9 @@ setInterval(function ( ) {
 </script>
 </html>)rawliteral";
 
-// Replaces placeholder with DHT values
+
 String processor(const String& var){
-  //Serial.println(var);
+
   if(var == "TEMPERATURE"){
     return readDHTTemperature();
   }
@@ -130,22 +122,22 @@ String processor(const String& var){
 }
 
 void setup(){
-  // Serial port for debugging purposes
+ 
   Serial.begin(115200);
 
   dht.begin();
   
-  // Connect to Wi-Fi
+
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi..");
   }
 
-  // Print ESP32 Local IP Address
+ 
   Serial.println(WiFi.localIP());
 
-  // Route for root / web page
+ 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html, processor);
   });
@@ -156,7 +148,7 @@ void setup(){
     request->send_P(200, "text/plain", readDHTHumidity().c_str());
   });
 
-  // Start server
+
   server.begin();
 }
  
